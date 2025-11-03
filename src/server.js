@@ -1,8 +1,16 @@
 import express from 'express';
+import { Server } from 'socket.io';
 import { config } from './config/index.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
+
+const io = new Server({
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
 
 // middleware
 app.use(express.json());
@@ -15,15 +23,33 @@ app.get('/health', (req, res) => {
   });
 });
 
+// socket io
+io.on('connection', (socket) => {
+  logger.info(`Client connected: ${socket.id}`);
+
+  socket.on('disconnect', (reason) => {
+    logger.info(`Client disconnected: ${socket.id}, reason: ${reason}`);
+  });
+
+  socket.on('error', (error) => {
+    logger.error(`Socket error for ${socket.id}:`, error);
+  });
+});
+
 // start server
 const server = app.listen(config.port, () => {
   logger.info(`Server started on port ${config.port}`);
   logger.info(`Environment: ${config.env}`);
 });
 
+io.attach(server);
+
 // graceful shutdown
 process.on('SIGTERM', () => {
   logger.info('SIGTERM signal received: closing HTTP server');
+  io.close(() => {
+    logger.info('Socket.IO server closed');
+  });
   server.close(() => {
     logger.info('HTTP server closed');
   });
