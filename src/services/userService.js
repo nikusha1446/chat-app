@@ -2,6 +2,7 @@ export class UserService {
   constructor() {
     this.users = new Map();
     this.usernames = new Set();
+    this.AWAY_THRESHOLD = 2 * 60 * 1000;
   }
 
   addUser(socketId, username) {
@@ -12,6 +13,8 @@ export class UserService {
     const user = {
       id: socketId,
       username: username,
+      status: 'online',
+      lastActivity: Date.now(),
       connectedAt: new Date().toISOString(),
     };
 
@@ -43,5 +46,38 @@ export class UserService {
 
   getUserCount() {
     return this.users.size;
+  }
+
+  updateActivity(socketId) {
+    const user = this.users.get(socketId);
+
+    if (user) {
+      user.lastActivity = Date.now();
+
+      if (user.status === 'away') {
+        user.status = 'online';
+        return { statusChanged: true, user };
+      }
+    }
+
+    return { statusChanged: false, user };
+  }
+
+  checkInactiveUsers() {
+    const now = Date.now();
+    const changedUsers = [];
+
+    for (const [socketId, user] of this.users.entries()) {
+      if (user.status === 'online') {
+        const inactiveDuration = now - user.lastActivity;
+
+        if (inactiveDuration >= this.AWAY_THRESHOLD) {
+          user.status = 'away';
+          changedUsers.push(user);
+        }
+      }
+    }
+
+    return changedUsers;
   }
 }

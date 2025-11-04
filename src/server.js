@@ -22,8 +22,24 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     environment: config.env,
+    connections: userService.getUserCount(),
   });
 });
+
+// check for inactive users
+setInterval(() => {
+  const changedUsers = userService.checkInactiveUsers();
+
+  changedUsers.forEach((user) => {
+    logger.info(`User ${user.username} is now away (inactive)`);
+
+    io.emit('user:status:changed', {
+      user: user,
+      oldStatus: 'online',
+      newStatus: 'away',
+    });
+  });
+}, 30000);
 
 // socket io midleware
 io.use((socket, next) => {
@@ -73,6 +89,18 @@ io.on('connection', (socket) => {
     if (!messageText || messageText.trim() === '') {
       socket.emit('error', { message: 'Message cannot be empty' });
       return;
+    }
+
+    const activityResult = userService.updateActivity(socket.id);
+
+    if (activityResult.statusChanged) {
+      logger.info(`User ${socket.username} is back online`);
+
+      io.emit('user:status:changed', {
+        user: activityResult.user,
+        oldStatus: 'away',
+        newStatus: 'online',
+      });
     }
 
     const user = userService.getUser(socket.id);
