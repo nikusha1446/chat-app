@@ -3,8 +3,10 @@ import { Server } from 'socket.io';
 import { config } from './config/index.js';
 import { logger } from './utils/logger.js';
 import { UserService } from './services/userService.js';
+import { MessageService } from './services/messageService.js';
 
 const userService = new UserService();
+const messageService = new MessageService();
 const app = express();
 
 const io = new Server({
@@ -121,7 +123,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('message', (data) => {
+  socket.on('message', (data, acknowledgment) => {
     const messageText = typeof data === 'string' ? data : String(data);
 
     if (!messageText || messageText.trim() === '') {
@@ -145,17 +147,47 @@ io.on('connection', (socket) => {
 
     const user = userService.getUser(socket.id);
 
-    const message = {
-      id: `${Date.now()}-${socket.id}`,
-      text: messageText.trim(),
-      senderId: socket.id,
-      username: user.username,
-      timestamp: new Date().toISOString(),
-    };
+    const message = messageService.createMessage(
+      socket.id,
+      user.username,
+      messageText
+    );
+
+    if (acknowledgment && typeof acknowledgment === 'function') {
+      acknowledgment({
+        success: true,
+        messageId: message.id,
+        timestamp: message.timestamp,
+      });
+    }
 
     io.emit('message', message);
 
     logger.info(`Message from ${user.username}:`, message.text);
+  });
+
+  socket.on('message:delivered', (data) => {
+    const { messageId } = data;
+
+    if (!messageId) {
+      logger.warn(`Invalid delivery confirmation from ${socket.username}`);
+      return;
+    }
+
+    const message = messageService.markAsDelivered(messageId, socket.id);
+
+    if (message) {
+      logger.debug(
+        `Message ${messageId} delivered to ${socket.username} (${message.deliveredTo.length} recipients)`
+      );
+
+      io.to(message.senderId).emit('message:status:updated', {
+        messageId: message.id,
+        status: message.status,
+        deliveredTo: message.deliveredTo.length,
+        deliveredAt: message.deliveredAt,
+      });
+    }
   });
 
   socket.on('disconnect', (reason) => {
