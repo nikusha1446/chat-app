@@ -166,6 +166,72 @@ io.on('connection', (socket) => {
     logger.info(`Message from ${user.username}:`, message.text);
   });
 
+  socket.on('message:private', (data) => {
+    const { recipientId, text } = data;
+
+    if (!recipientId || !text || text.trim() === '') {
+      socket.emit('error', { message: 'Invalid private message format' });
+      return;
+    }
+
+    const recipient = userService.getUser(recipientId);
+
+    if (!recipient) {
+      socket.emit('error', { message: 'Recipient not found' });
+      return;
+    }
+
+    if (recipientId === socket.id) {
+      socket.emit('error', { message: 'Cannot send message to yourself' });
+      return;
+    }
+
+    const sender = userService.getUser(socket.id);
+
+    const message = messageService.createPrivateMessage(
+      socket.id,
+      sender.username,
+      recipientId,
+      recipient.username,
+      text
+    );
+
+    io.to(recipientId).emit('message:private', message);
+
+    socket.emit('message:private', message);
+
+    logger.info(
+      `Private message from ${sender.username} to ${recipient.username}: "${message.text}"`
+    );
+  });
+
+  socket.on('message:private:delivered', (data) => {
+    const { messageId } = data;
+
+    if (!messageId) {
+      logger.warn(
+        `Invalid private message delivery confirmation from ${socket.username}`
+      );
+      return;
+    }
+
+    const message = messageService.markPrivateMessageAsDelivered(messageId);
+
+    if (message) {
+      logger.debug(
+        `Private message ${messageId} delivered to ${socket.username}`
+      );
+
+      io.to(message.senderId).emit('message:status:updated', {
+        messageId: message.id,
+        status: 'delivered',
+        type: 'private',
+        recipientId: message.recipientId,
+        deliveredAt: message.deliveredAt,
+      });
+    }
+  });
+
   socket.on('message:delivered', (data) => {
     const { messageId } = data;
 
