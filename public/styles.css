@@ -7,7 +7,7 @@
 }
 
 body {
-  background-color: #09090b;
+  background-color: #030303;
   min-height: 100vh;
   color: #fafafa;
   font-family: 'Inter', sans-serif;
@@ -53,4 +53,105 @@ body {
   40% {
     transform: scale(1);
   }
+}
+
+/* login */
+
+#login-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container {
+  background: #09090b;
+  padding: 40px;
+  border-radius: 8px;
+  border: 1px solid #27272a;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  max-width: 368px;
+  width: 100%;
+  animation: slideIn 0.5s ease-out;
+}
+
+.login-container .icon {
+  margin-bottom: 10px;
+  font-size: 40px;
+}
+
+.login-container h3 {
+  font-size: 1.125rem;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #dfe9f1;
+}
+
+.subtitle {
+  color: #fafafa;
+  margin-bottom: 30px;
+  font-size: 0.875rem;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#username-input {
+  height: 34px;
+  padding-inline: 12px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: #fafafa;
+  transition: all 0.1s;
+  font-family: 'Inter', sans-serif;
+}
+
+#username-input::placeholder {
+  color: #676770;
+}
+
+#username-input:focus {
+  outline: none;
+  border-color: #5d5d66;
+  box-shadow: 0 0 0 3px rgba(93, 93, 102, 0.19);
+}
+
+#login-form button {
+  height: 34px;
+  padding-inline: 12px;
+  background: #1354e4;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+#login-form button:hover {
+  background-color: #134fd4;
+}
+
+.hint {
+  color: #676770;
+  font-size: 0.8rem;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.8125rem;
+  margin-top: 20px;
+  padding: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
 }

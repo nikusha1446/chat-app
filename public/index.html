@@ -12,7 +12,27 @@
   </head>
   <body>
     <div id="login-screen">
-      <h1>Welcome to Real-Time Chat</h1>
+      <div class="login-container">
+        <div class="icon">💬</div>
+        <h3>Real-Time Chat</h3>
+        <p class="subtitle">Connect and chat with others instantly</p>
+
+        <form id="login-form">
+          <input
+            type="text"
+            id="username-input"
+            placeholder="Enter your username"
+            minlength="2"
+            maxlength="20"
+            required
+            autocomplete="off"
+          />
+          <button type="submit">Join Chat</button>
+        </form>
+
+        <p class="hint">Username must be 2-20 characters</p>
+        <p id="login-error" class="error-message hidden"></p>
+      </div>
     </div>
 
     <div id="chat-screen" class="hidden"></div>
