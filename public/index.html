@@ -33,7 +33,51 @@
       </div>
     </div>
 
-    <div id="chat-screen" class="hidden"></div>
+    <div id="chat-screen" class="hidden">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>💬 chatapp</h2>
+        </div>
+
+        <div class="users-section">
+          <h3>Group Chat</h3>
+          <div id="group-chat-btn" class="group-chat-item active">
+            <span class="group-name">Group Chat</span>
+          </div>
+
+          <h3>Online Users (<span id="users-count">0</span>)</h3>
+          <div id="users-list"></div>
+        </div>
+      </aside>
+
+      <main class="chat-main">
+        <div class="chat-main-container">
+          <header class="chat-header">
+            <div class="chat-info">
+              <h2 id="chat-title">Group Chat</h2>
+              <p id="chat-subtitle">Everyone can see these messages</p>
+            </div>
+            <div class="chat-header-user">
+              <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+          </header>
+
+          <div class="messages-container">
+            <div id="messages"></div>
+          </div>
+
+          <div class="message-input-container">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Type a message..."
+              autocomplete="off"
+            />
+            <button id="send-btn">Send</button>
+          </div>
+        </div>
+      </main>
+    </div>
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="app.js"></script>
