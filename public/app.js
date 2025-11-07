@@ -1,5 +1,6 @@
 let socket = null;
 let currentUser = null;
+let onlineUsers = new Map();
 
 const loginScreen = document.getElementById('login-screen');
 const chatScreen = document.getElementById('chat-screen');
@@ -8,6 +9,8 @@ const loginButton = loginForm.querySelector('button');
 const usernameInput = document.getElementById('username-input');
 const loginError = document.getElementById('login-error');
 const logoutButton = document.getElementById('logout-btn');
+const usersCountEl = document.getElementById('users-count');
+const usersListEl = document.getElementById('users-list');
 
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -61,6 +64,38 @@ function connectToServer(username) {
       resetLoginForm();
     }
   });
+
+  socket.on('users:list', (data) => {
+    console.log('Users list received:', data);
+
+    data.users.forEach((user) => {
+      onlineUsers.set(user.id, user);
+    });
+
+    renderUsersList();
+  });
+
+  socket.on('user:joined', (data) => {
+    console.log('User joined:', data.user.username);
+    onlineUsers.set(data.user.id, data.user);
+    renderUsersList();
+  });
+
+  socket.on('user:left', (data) => {
+    console.log('User left:', data.user.username);
+    onlineUsers.delete(data.user.id);
+    renderUsersList();
+  });
+
+  socket.on('user:status:changed', (data) => {
+    console.log('User status changed:', data.user.username, data.newStatus);
+    const user = onlineUsers.get(data.user.id);
+
+    if (user) {
+      user.status = data.newStatus;
+      renderUsersList();
+    }
+  });
 }
 
 function showChatScreen() {
@@ -93,3 +128,28 @@ logoutButton.addEventListener('click', () => {
   currentUser = null;
   location.reload();
 });
+
+function renderUsersList() {
+  usersListEl.innerHTML = '';
+  usersCountEl.textContent = onlineUsers.size - 1;
+
+  onlineUsers.forEach((user) => {
+    if (user.id === currentUser.id) return;
+
+    const userEl = document.createElement('div');
+    userEl.className = 'user-item';
+    userEl.dataset.userId = user.id;
+
+    const statusDot = document.createElement('span');
+    statusDot.className = `user-status ${user.status}`;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'user-name';
+    nameSpan.textContent = user.username;
+
+    userEl.appendChild(statusDot);
+    userEl.appendChild(nameSpan);
+
+    usersListEl.appendChild(userEl);
+  });
+}

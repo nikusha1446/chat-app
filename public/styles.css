@@ -213,17 +213,34 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
   border: 1px solid transparent;
+  line-height: 1;
 }
 
 .user-item.active,
 .group-chat-item.active {
   background: #111114;
   border-color: #111114;
+}
+
+.user-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: block;
+  flex-shrink: 0;
+}
+
+.user-status.online {
+  background: #00a63e;
+}
+
+.user-status.away {
+  background: #8e51ff;
 }
 
 .user-name,
