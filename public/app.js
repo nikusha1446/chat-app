@@ -7,6 +7,7 @@ const loginForm = document.getElementById('login-form');
 const loginButton = loginForm.querySelector('button');
 const usernameInput = document.getElementById('username-input');
 const loginError = document.getElementById('login-error');
+const logoutButton = document.getElementById('logout-btn');
 
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -82,3 +83,13 @@ function resetLoginForm() {
   loginButton.disabled = false;
   loginButton.textContent = 'Join Chat';
 }
+
+logoutButton.addEventListener('click', () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+
+  currentUser = null;
+  location.reload();
+});
