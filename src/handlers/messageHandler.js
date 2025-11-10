@@ -142,3 +142,60 @@ export const handlePrivateMessageDelivery =
       }
     });
   };
+
+export const handleMessageRead = (io, messageService) => (socket) => {
+  socket.on('message:read', (data) => {
+    const { messageId } = data;
+
+    if (!messageId) {
+      logger.warn(`Invalid read confirmation from ${socket.username}`);
+      return;
+    }
+
+    const message = messageService.markAsRead(messageId, socket.id);
+
+    if (message) {
+      logger.debug(
+        `Message ${messageId} read by ${socket.username} (${message.readBy.length} readers)`
+      );
+
+      io.to(message.senderId).emit('message:status:updated', {
+        messageId: message.id,
+        status: message.status,
+        readBy: message.readBy.length,
+        readAt: message.readAt,
+        type: 'public',
+      });
+    }
+  });
+};
+
+export const handlePrivateMessageRead = (io, messageService) => (socket) => {
+  socket.on('message:private:read', (data) => {
+    const { messageId } = data;
+
+    if (!messageId) {
+      logger.warn(
+        `Invalid private message read confirmation from ${socket.username}`
+      );
+      return;
+    }
+
+    const message = messageService.markPrivateMessageAsRead(
+      messageId,
+      socket.id
+    );
+
+    if (message) {
+      logger.debug(`Private message ${messageId} read by ${socket.username}`);
+
+      io.to(message.senderId).emit('message:status:updated', {
+        messageId: message.id,
+        status: 'read',
+        type: 'private',
+        recipientId: message.recipientId,
+        readAt: message.readAt,
+      });
+    }
+  });
+};

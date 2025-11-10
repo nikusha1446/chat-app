@@ -13,6 +13,7 @@ export class MessageService {
       timestamp: new Date().toISOString(),
       status: 'sent',
       deliveredTo: [],
+      readBy: [],
       type: 'public',
     };
 
@@ -37,6 +38,7 @@ export class MessageService {
       timestamp: new Date().toISOString(),
       status: 'sent',
       delivered: false,
+      read: false,
       type: 'private',
     };
 
@@ -85,5 +87,55 @@ export class MessageService {
   getPrivateConversation(userId1, userId2) {
     const conversationId = [userId1, userId2].sort().join('-');
     return this.privateMessages.get(conversationId) || [];
+  }
+
+  markAsRead(messageId, socketId) {
+    const message = this.messages.get(messageId);
+
+    if (!message) {
+      return null;
+    }
+
+    if (!message.readBy) {
+      message.readBy = [];
+    }
+
+    if (message.senderId === socketId) {
+      return message;
+    }
+
+    if (message.readBy.includes(socketId)) {
+      return message;
+    }
+
+    message.readBy.push(socketId);
+    message.readAt = new Date().toISOString();
+
+    if (message.status === 'delivered' || message.status === 'sent') {
+      message.status = 'read';
+    }
+
+    return message;
+  }
+
+  markPrivateMessageAsRead(messageId, socketId) {
+    const message = this.messages.get(messageId);
+
+    if (!message || message.type !== 'private') {
+      return null;
+    }
+
+    if (message.senderId === socketId) {
+      return message;
+    }
+
+    if (message.read) {
+      return message;
+    }
+
+    message.read = true;
+    message.readAt = new Date().toISOString();
+
+    return message;
   }
 }

@@ -1,8 +1,10 @@
 import { handleConnection, handleDisconnect } from './connectionHandler.js';
 import {
   handleMessageDelivery,
+  handleMessageRead,
   handlePrivateMessage,
   handlePrivateMessageDelivery,
+  handlePrivateMessageRead,
   handlePublicMessage,
 } from './messageHandler.js';
 import { handleTypingStart, handleTypingStop } from './typingHandler.js';
@@ -17,6 +19,8 @@ export const registerSocketHandlers = (io, userService, messageService) => {
     handlePrivateMessage(io, userService, messageService)(socket);
     handleMessageDelivery(io, messageService)(socket);
     handlePrivateMessageDelivery(io, messageService)(socket);
+    handleMessageRead(io, messageService)(socket);
+    handlePrivateMessageRead(io, messageService)(socket);
 
     // typing indicators
     handleTypingStart(userService)(socket);

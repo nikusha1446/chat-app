@@ -1,5 +1,9 @@
 import { resetLoginForm, showChatScreen, showLoginError } from './auth.js';
-import { addSystemMessage, displayMessage } from './chat.js';
+import {
+  addSystemMessage,
+  displayMessage,
+  updateMessageStatus,
+} from './chat.js';
 import { state } from './state.js';
 import { hideTypingIndicator, showTypingIndicator } from './typing.js';
 import { renderUsersList } from './users.js';
@@ -107,6 +111,34 @@ export function connectToServer(username) {
     if (state.currentChat === otherUserId) {
       displayMessage(message, true);
     }
+  });
+
+  state.socket.on('message:status:updated', (data) => {
+    const { messageId, status, type } = data;
+
+    if (type === 'private') {
+      state.messageHistory.private.forEach((messages) => {
+        const message = messages.find((m) => m.id === messageId);
+
+        if (message) {
+          message.status = status;
+          if (data.readAt) message.readAt = data.readAt;
+          if (data.deliveredAt) message.deliveredAt = data.deliveredAt;
+        }
+      });
+    } else {
+      const message = state.messageHistory.group.find(
+        (m) => m.id === messageId
+      );
+      if (message) {
+        message.status = status;
+        if (data.readBy !== undefined) message.readByCount = data.readBy;
+        if (data.readAt) message.readAt = data.readAt;
+        if (data.deliveredAt) message.deliveredAt = data.deliveredAt;
+      }
+    }
+
+    updateMessageStatus(messageId, status);
   });
 
   state.socket.on('user:typing', (data) => {
