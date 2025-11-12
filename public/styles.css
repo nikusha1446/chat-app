@@ -500,18 +500,6 @@ body {
   align-self: flex-end;
 }
 
-.message-status-text.sent {
-  color: #676770;
-}
-
-.message-status-text.delivered {
-  color: #676770;
-}
-
-.message-status-text.read {
-  color: #fafafa;
-}
-
 /* unread messages badge */
 
 .unread-badge {
