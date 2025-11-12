@@ -37,7 +37,11 @@ export function connectToServer(username) {
 
   state.socket.on('users:list', (data) => {
     data.users.forEach((user) => {
-      state.onlineUsers.set(user.id, user);
+      if (user.id === state.currentUser.id) {
+        state.onlineUsers.set(user.id, state.currentUser);
+      } else {
+        state.onlineUsers.set(user.id, user);
+      }
     });
     renderUsersList();
   });
@@ -85,6 +89,10 @@ export function connectToServer(username) {
     if (user) {
       user.status = data.newStatus;
       renderUsersList();
+    }
+
+    if (data.user.id === state.currentUser.id) {
+      state.currentUser.status = data.newStatus;
     }
   });
 

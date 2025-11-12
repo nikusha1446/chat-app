@@ -213,7 +213,7 @@ body {
 
 /* chat users section */
 .users-section {
-  padding: 10px 22px 21.5px 22px;
+  padding: 10px 22px 0 22px;
   overflow-y: auto;
   flex: 1;
 }
@@ -276,6 +276,42 @@ body {
   font-weight: 400;
   flex: 1;
   color: #fafafa;
+}
+
+/* sidebar footer */
+.sidebar-footer {
+  padding: 21.5px 22px;
+}
+
+.current-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #111114;
+  border-radius: 8px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-info-name {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #fafafa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-info-status {
+  font-size: 0.75rem;
+  color: #71717a;
 }
 
 /* chat main area */

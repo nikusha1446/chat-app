@@ -19,4 +19,7 @@ export const dom = {
   sidebar: document.querySelector('.sidebar'),
   sidebarToggle: document.getElementById('sidebar-toggle'),
   sidebarOverlay: document.getElementById('sidebar-overlay'),
+  currentUserName: document.getElementById('current-user-name'),
+  statusEl: document.querySelector('.sidebar-footer .user-status'),
+  statusTextEl: document.querySelector('.user-info-status'),
 };

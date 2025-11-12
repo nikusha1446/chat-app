@@ -6,6 +6,18 @@ export function renderUsersList() {
   dom.usersListEl.innerHTML = '';
   dom.usersCountEl.textContent = state.onlineUsers.size - 1;
 
+  dom.currentUserName.textContent = state.currentUser.username;
+
+  if (dom.statusEl) {
+    dom.statusEl.className = `user-status ${state.currentUser.status}`;
+  }
+
+  if (dom.statusTextEl) {
+    dom.statusTextEl.textContent = state.currentUser.status;
+  }
+
+  console.log(state.currentUser);
+
   const existingGroupBadge = dom.groupChatBtn.querySelector('.unread-badge');
 
   if (existingGroupBadge) {
