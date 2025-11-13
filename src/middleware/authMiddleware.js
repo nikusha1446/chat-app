@@ -1,6 +1,5 @@
 export const authMiddleware = (socket, next) => {
-  const username =
-    socket.handshake.auth.username || socket.handshake.query.username;
+  const username = socket.handshake.auth.username;
 
   if (!username || username.trim() === '') {
     return next(new Error('Username is required'));

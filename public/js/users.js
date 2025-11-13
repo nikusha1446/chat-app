@@ -16,8 +16,6 @@ export function renderUsersList() {
     dom.statusTextEl.textContent = state.currentUser.status;
   }
 
-  console.log(state.currentUser);
-
   const existingGroupBadge = dom.groupChatBtn.querySelector('.unread-badge');
 
   if (existingGroupBadge) {
