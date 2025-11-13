@@ -9,6 +9,16 @@ export const authMiddleware = (socket, next) => {
     return next(new Error('Username must be between 2 and 20 characters'));
   }
 
+  const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+
+  if (!usernameRegex.test(username)) {
+    return next(
+      new Error(
+        'Username can only contain letters, numbers, underscores, and hyphens'
+      )
+    );
+  }
+
   socket.username = username.trim();
   next();
 };

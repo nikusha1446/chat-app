@@ -17,6 +17,15 @@ function handleLogin(e) {
     return;
   }
 
+  const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+
+  if (!usernameRegex.test(username)) {
+    showLoginError(
+      'Username can only contain letters, numbers, underscores, and hyphens'
+    );
+    return;
+  }
+
   dom.usernameInput.disabled = true;
   dom.loginButton.disabled = true;
   dom.loginButton.textContent = 'Connecting...';
