@@ -6,8 +6,6 @@ Real-time chat application built with Socket.IO, Node.js, and vanilla JavaScript
 
 **Try it live:** [https://chat-app-a7pg.onrender.com](https://chat-app-a7pg.onrender.com)
 
-> Note: Hosted on Render free tier - may take 30 seconds to wake up on first visit.
-
 ![Chat Application](screen.png)
 
 ## Features

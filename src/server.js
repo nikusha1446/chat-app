@@ -70,3 +70,20 @@ process.on('SIGTERM', () => {
     logger.info('HTTP server closed');
   });
 });
+
+// keep-alive
+if (config.env === 'production') {
+  const RENDER_URL =
+    process.env.RENDER_EXTERNAL_URL || `http://localhost:${config.port}`;
+
+  setInterval(async () => {
+    try {
+      const response = await fetch(`${RENDER_URL}/health`);
+      if (response.ok) {
+        logger.info('Keep-alive ping successful');
+      }
+    } catch (error) {
+      logger.error('Keep-alive ping failed:', error.message);
+    }
+  }, 14 * 60 * 1000);
+}
